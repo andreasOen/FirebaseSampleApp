@@ -1,54 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-                android:id="@+id/container"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical"
-              tools:context="com.example.kk_mb_007.firebasesampleandroid.MainActivity"
-    >
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.example.kk_mb_007.firebasesampleandroid.MainActivity">
 
     <ImageView
         android:id="@+id/img_show"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minHeight="@dimen/image_view_height"
-        android:background="@color/colorAccent"
-        />
+        android:layout_height="@dimen/image_view_height"
+        android:background="@color/blue"
+        android:src="@drawable/firebase_android" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/spacing_normal"
-        >
+        android:layout_margin="@dimen/spacing_normal">
 
         <Button
             android:id="@+id/btn_subscribe"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="@dimen/spacing_normal"
             android:layout_alignParentLeft="true"
-            android:text="@string/subscribe_lbl"
-            />
-
-
+            android:layout_marginRight="@dimen/spacing_normal"
+            android:text="@string/subscribe_lbl" />
 
         <Button
             android:id="@+id/btn_unsubscribe"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="@dimen/spacing_normal"
             android:layout_alignParentRight="true"
-            android:text="@string/unsubscribe_lbl"
-            />
+            android:layout_marginRight="@dimen/spacing_normal"
+            android:text="@string/unsubscribe_lbl" />
 
         <ProgressBar
             android:id="@+id/progress_bar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/btn_subscribe"
             android:layout_toLeftOf="@id/btn_unsubscribe"
-            android:visibility="gone"
-            />
+            android:layout_toRightOf="@id/btn_subscribe"
+            android:visibility="gone" />
     </RelativeLayout>
 </LinearLayout>
