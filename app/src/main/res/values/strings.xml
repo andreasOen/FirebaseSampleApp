@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">FirebaseSampleAndroid</string>
+    <string name="unsubscribe_lbl">Unsubscribe</string>
+    <string name="subscribe_lbl">Subscribe</string>
 </resources>
