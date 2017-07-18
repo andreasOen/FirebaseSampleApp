@@ -1,9 +1,16 @@
-package com.example.kk_mb_007.firebasesampleandroid;
+package com.example.kk_mb_007.firebasesampleandroid.activity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -13,13 +20,21 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.example.kk_mb_007.firebasesampleandroid.R;
+import com.example.kk_mb_007.firebasesampleandroid.app.Const;
+import com.example.kk_mb_007.firebasesampleandroid.service.MyFirebaseInstanceIDService;
+import com.example.kk_mb_007.firebasesampleandroid.util.NotificationUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -35,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     ProgressBar progressBar;
 
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
+    private BroadcastReceiver mRegistrationBroadcastReceiver;
     private long cacheExpiration = 3600;
 
     @Override
@@ -45,6 +61,42 @@ public class MainActivity extends AppCompatActivity {
 
         initFirebaseRemoteConfig();
         fetchData();
+        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction().equals(Const.REGISTRATION_COMPLETE)) {
+                    FirebaseMessaging.getInstance().subscribeToTopic(Const.TOPIC_GLOBAL);
+                    displayFirebaseRegId();
+                } else if (intent.getAction().equals(Const.PUSH_NOTIFICATION)) {
+                    // new push notification is received
+                    String message = intent.getStringExtra("message");
+
+                    Toast.makeText(getApplicationContext(), "Push notification: " + message, Toast.LENGTH_LONG).show();
+                }
+            }
+        };
+        displayFirebaseRegId();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
+                new IntentFilter(Const.REGISTRATION_COMPLETE));
+
+        // register new push message receiver
+        // by doing this, the activity will be notified each time a new message arrives
+        LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
+                new IntentFilter(Const.PUSH_NOTIFICATION));
+
+        // clear the notification area when the app is opened
+        NotificationUtils.clearNotifications(getApplicationContext());
+    }
+
+    @Override
+    protected void onPause() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+        super.onPause();
     }
 
     @Override
@@ -62,6 +114,16 @@ public class MainActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @OnClick(R.id.btn_subscribe)
+    final void subscribeButtonClicked() {
+        FirebaseMessaging.getInstance().subscribeToTopic("news");
+    }
+
+    @OnClick(R.id.btn_unsubscribe)
+    final void unSubscribeButtonClicked() {
+        FirebaseMessaging.getInstance().unsubscribeFromTopic("news");
     }
 
     private void initFirebaseRemoteConfig() {
@@ -91,6 +153,18 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    private void displayFirebaseRegId() {
+        SharedPreferences pref = getApplicationContext().getSharedPreferences(Const.SHARED_PREF, 0);
+        String regId = pref.getString(MyFirebaseInstanceIDService.PREF_FCM_TOKEN_KEY, null);
+
+        Timber.d( "Firebase reg id: " + regId);
+
+        if (!TextUtils.isEmpty(regId))
+            Timber.d("Firebase Reg Id: " + regId);
+        else
+            Timber.e("Firebase Reg Id is not received yet!");
     }
 
     private void updateView() {
