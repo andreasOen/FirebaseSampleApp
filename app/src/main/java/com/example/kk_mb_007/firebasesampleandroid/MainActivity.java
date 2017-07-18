@@ -7,7 +7,10 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -24,6 +27,12 @@ public class MainActivity extends AppCompatActivity {
 
     @BindView(R.id.img_show)
     ImageView imgShow;
+
+    @BindView(R.id.container)
+    LinearLayout container;
+
+    @BindView(R.id.progress_bar)
+    ProgressBar progressBar;
 
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
     private long cacheExpiration = 3600;
@@ -67,16 +76,17 @@ public class MainActivity extends AppCompatActivity {
         if (mFirebaseRemoteConfig.getInfo().getConfigSettings().isDeveloperModeEnabled()) {
             cacheExpiration = 0;
         }
-
+        progressBar.setVisibility(View.VISIBLE);
         mFirebaseRemoteConfig.fetch(cacheExpiration).addOnCompleteListener(this,
                 new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
+                        progressBar.setVisibility(View.GONE);
                         if (task.isSuccessful()) {
                             mFirebaseRemoteConfig.activateFetched();
                             updateView();
                         } else {
-                            Toast.makeText(MainActivity.this, "Failed to retrieve data",
+                            Toast.makeText(MainActivity.this, getString(R.string.error_message_fetch),
                                     Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -85,6 +95,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateView() {
         String colorCode = mFirebaseRemoteConfig.getString(REMOTE_CONFIG_KEY);
-        imgShow.setBackgroundColor(Color.parseColor(colorCode));
+        container.setBackgroundColor(Color.parseColor(colorCode));
     }
 }

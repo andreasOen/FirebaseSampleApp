@@ -2,4 +2,5 @@
     <string name="app_name">FirebaseSampleAndroid</string>
     <string name="unsubscribe_lbl">Unsubscribe</string>
     <string name="subscribe_lbl">Subscribe</string>
+    <string name="error_message_fetch">Failed to retrieve data</string>
 </resources>

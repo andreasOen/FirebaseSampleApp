@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:tools="http://schemas.android.com/tools"
+                android:id="@+id/container"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:orientation="vertical"
@@ -15,11 +16,9 @@
         android:background="@color/colorAccent"
         />
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
         android:layout_margin="@dimen/spacing_normal"
         >
 
@@ -28,15 +27,28 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="@dimen/spacing_normal"
+            android:layout_alignParentLeft="true"
             android:text="@string/subscribe_lbl"
             />
+
+
 
         <Button
             android:id="@+id/btn_unsubscribe"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="@dimen/spacing_normal"
+            android:layout_alignParentRight="true"
             android:text="@string/unsubscribe_lbl"
             />
-    </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/btn_subscribe"
+            android:layout_toLeftOf="@id/btn_unsubscribe"
+            android:visibility="gone"
+            />
+    </RelativeLayout>
 </LinearLayout>
