@@ -1,10 +1,16 @@
 package com.example.kk_mb_007.firebasesampleandroid.service;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 
+import com.example.kk_mb_007.firebasesampleandroid.R;
 import com.example.kk_mb_007.firebasesampleandroid.activity.MainActivity;
 import com.example.kk_mb_007.firebasesampleandroid.app.Const;
 import com.example.kk_mb_007.firebasesampleandroid.util.NotificationUtils;
@@ -21,14 +27,14 @@ import timber.log.Timber;
  */
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
-    private static final String EXTRA_KEY_MESSSAGE = "message";
-    private static final String FIELD_DATA = "data";
-    private static final String FIELD_TITLE = "title";
-    private static final String FIELD_MESSAGE = "message";
-    private static final String FIELD_BACKGROUND = "is_background";
-    private static final String FIELD_IMAGE_URL = "image";
-    private static final String FIELD_TIME_STAMP = "timestamp";
-    private static final String FIELD_PAYLOAD = "payload";
+    public static final String EXTRA_KEY_MESSSAGE = "message";
+    public static final String FIELD_DATA = "data";
+    public static final String FIELD_TITLE = "title";
+    public static final String FIELD_MESSAGE = "message";
+    public static final String FIELD_BACKGROUND = "is_background";
+    public static final String FIELD_IMAGE_URL = "image";
+    public static final String FIELD_TIME_STAMP = "timestamp";
+    public static final String FIELD_PAYLOAD = "payload";
 
     private NotificationUtils notificationUtils;
 
@@ -39,21 +45,44 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         if (remoteMessage == null) return;
 
-        if (remoteMessage.getNotification() != null) {
-            Timber.d("Notification Body: " + remoteMessage.getNotification().getBody());
-            handleNotification(remoteMessage.getNotification().getBody());
-        }
+        sendNotification(remoteMessage.getData().get(FIELD_TITLE), remoteMessage.getData().get(FIELD_MESSAGE));
+//        if (remoteMessage.getNotification() != null) {
+//            Timber.d("Notification Body: " + remoteMessage.getNotification().getBody());
+//            handleNotification(remoteMessage.getNotification().getBody());
+//        }
+//
+//        if (remoteMessage.getData().size() > 0) {
+//            Timber.d("Data payload: " + remoteMessage.getData().toString());
+//
+//            try {
+//                JSONObject json = new JSONObject(remoteMessage.getData().toString());
+//                handleDataMessage(json);
+//            }catch (Exception e) {
+//                Timber.d("Exception: " + e.getMessage());
+//            }
+//        }
+    }
 
-        if (remoteMessage.getData().size() > 0) {
-            Timber.d("Data payload: " + remoteMessage.getData().toString());
+    private void sendNotification(String title, String messageBody) {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
 
-            try {
-                JSONObject json = new JSONObject(remoteMessage.getData().toString());
-                handleDataMessage(json);
-            }catch (Exception e) {
-                Timber.d("Exception: " + e.getMessage());
-            }
-        }
+        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle(title)
+                .setContentText(messageBody)
+                .setAutoCancel(true)
+                .setSound(defaultSoundUri)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(messageBody))
+                .setPriority(NotificationCompat.PRIORITY_MAX)
+                .setContentIntent(pendingIntent);
+
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        notificationManager.notify(0, notificationBuilder.build());
     }
 
     private void handleNotification(String message) {
@@ -77,21 +106,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
             String title = data.getString(FIELD_TITLE);
             String message = data.getString(FIELD_MESSAGE);
-            boolean isBackground = data.getBoolean(FIELD_BACKGROUND);
             String imageUrl = data.getString(FIELD_IMAGE_URL);
-            String timestamp = data.getString(FIELD_TIME_STAMP);
-            JSONObject payload = data.getJSONObject(FIELD_PAYLOAD);
-
-            Timber.d("title: " + title);
-            Timber.d("message: " + message);
-            Timber.d("isBackground: " + isBackground);
-            Timber.d("payload: " + payload.toString());
-            Timber.d("imageUrl: " + imageUrl);
-            Timber.d("timestamp: " + timestamp);
 
             if (!NotificationUtils.isAppIsInBackground(getApplicationContext())) {
                 Intent pushNotification = new Intent(Const.PUSH_NOTIFICATION);
-                pushNotification.putExtra(FIELD_MESSAGE, message);
+                pushNotification.putExtra(EXTRA_KEY_MESSSAGE, imageUrl);
                 LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
 
                 NotificationUtils notificationUtils = new NotificationUtils(getApplicationContext());
@@ -101,10 +120,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 resultIntent.putExtra(FIELD_MESSAGE, message);
 
                 if (TextUtils.isEmpty(imageUrl)) {
-                    showNotificationMessage(getApplicationContext(), title, message, timestamp,
+                    showNotificationMessage(getApplicationContext(), title, message, "",
                             resultIntent);
                 } else {
-                    showNotificationMessageWithBigImage(getApplicationContext(), title, message, timestamp,
+                    showNotificationMessageWithBigImage(getApplicationContext(), title, message, "",
                             resultIntent, imageUrl);
                 }
             }

@@ -20,14 +20,15 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.kk_mb_007.firebasesampleandroid.R;
 import com.example.kk_mb_007.firebasesampleandroid.app.Const;
 import com.example.kk_mb_007.firebasesampleandroid.service.MyFirebaseInstanceIDService;
+import com.example.kk_mb_007.firebasesampleandroid.service.MyFirebaseMessagingService;
 import com.example.kk_mb_007.firebasesampleandroid.util.NotificationUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 
@@ -49,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.progress_bar)
     ProgressBar progressBar;
 
+    private NotificationUtils notificationUtils;
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     private long cacheExpiration = 3600;
@@ -59,19 +61,21 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        notificationUtils = new NotificationUtils(this);
         initFirebaseRemoteConfig();
         fetchData();
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction().equals(Const.REGISTRATION_COMPLETE)) {
-                    FirebaseMessaging.getInstance().subscribeToTopic(Const.TOPIC_GLOBAL);
+                    FirebaseMessaging.getInstance().subscribeToTopic(Const.TOPIC_UPDATE);
                     displayFirebaseRegId();
                 } else if (intent.getAction().equals(Const.PUSH_NOTIFICATION)) {
-                    // new push notification is received
-                    String message = intent.getStringExtra("message");
-
-                    Toast.makeText(getApplicationContext(), "Push notification: " + message, Toast.LENGTH_LONG).show();
+//                    String message = intent.getStringExtra("message");
+//                    Toast.makeText(getApplicationContext(), "Push notification: " + message, Toast.LENGTH_LONG).show();
+                    Glide.with(getApplicationContext())
+                            .load(intent.getStringExtra(MyFirebaseMessagingService.EXTRA_KEY_MESSSAGE))
+                            .into(imgShow);
                 }
             }
         };
@@ -118,12 +122,12 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.btn_subscribe)
     final void subscribeButtonClicked() {
-        FirebaseMessaging.getInstance().subscribeToTopic("news");
+        FirebaseMessaging.getInstance().subscribeToTopic("update");
     }
 
     @OnClick(R.id.btn_unsubscribe)
     final void unSubscribeButtonClicked() {
-        FirebaseMessaging.getInstance().unsubscribeFromTopic("news");
+        FirebaseMessaging.getInstance().unsubscribeFromTopic("update");
     }
 
     private void initFirebaseRemoteConfig() {
