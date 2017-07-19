@@ -3,6 +3,8 @@
           package="com.example.kk_mb_007.firebasesampleandroid"
     >
 
+    <uses-permission android:name="android.permission.GET_TASKS" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"

@@ -2,6 +2,7 @@ package com.example.kk_mb_007.firebasesampleandroid.service;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.v4.content.LocalBroadcastManager;
 
 import com.example.kk_mb_007.firebasesampleandroid.app.Const;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -29,6 +30,7 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
 
         Intent registrationComplete = new Intent(Const.REGISTRATION_COMPLETE);
         registrationComplete.putExtra(EXTRA_FCM_KEY, refreshedToken);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete);
     }
 
     private void sendRegistrationToServer(final String token) {
