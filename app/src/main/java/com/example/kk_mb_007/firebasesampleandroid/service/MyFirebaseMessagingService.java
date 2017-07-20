@@ -32,7 +32,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     public static final String FIELD_TITLE = "title";
     public static final String FIELD_MESSAGE = "message";
     public static final String FIELD_BACKGROUND = "is_background";
-    public static final String FIELD_IMAGE_URL = "image";
+    public static final String FIELD_IMAGE_URL = "imageurl";
     public static final String FIELD_TIME_STAMP = "timestamp";
     public static final String FIELD_PAYLOAD = "payload";
 
@@ -45,22 +45,27 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         if (remoteMessage == null) return;
 
-        sendNotification(remoteMessage.getData().get(FIELD_TITLE), remoteMessage.getData().get(FIELD_MESSAGE));
-//        if (remoteMessage.getNotification() != null) {
-//            Timber.d("Notification Body: " + remoteMessage.getNotification().getBody());
-//            handleNotification(remoteMessage.getNotification().getBody());
-//        }
-//
-//        if (remoteMessage.getData().size() > 0) {
-//            Timber.d("Data payload: " + remoteMessage.getData().toString());
-//
-//            try {
-//                JSONObject json = new JSONObject(remoteMessage.getData().toString());
-//                handleDataMessage(json);
-//            }catch (Exception e) {
-//                Timber.d("Exception: " + e.getMessage());
-//            }
-//        }
+//        sendNotification(remoteMessage.getData().get(FIELD_TITLE), remoteMessage.getData().get(FIELD_MESSAGE));
+        if (remoteMessage.getNotification() != null) {
+            if (NotificationUtils.isAppIsInBackground(getApplicationContext())) {
+                sendNotification(remoteMessage.getNotification().getTitle(),
+                        remoteMessage.getNotification().getBody());
+            }
+        }
+
+        if (!NotificationUtils.isAppIsInBackground(getApplicationContext())
+                && remoteMessage.getData().size() > 0) {
+            Timber.d("Data payload: " + remoteMessage.getData().toString());
+
+            try {
+                Intent pushNotification = new Intent(Const.PUSH_NOTIFICATION);
+                pushNotification.putExtra(EXTRA_KEY_MESSSAGE,
+                        remoteMessage.getData().get(FIELD_IMAGE_URL));
+                LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
+            } catch (Exception e) {
+                Timber.d("Exception: " + e.getMessage());
+            }
+        }
     }
 
     private void sendNotification(String title, String messageBody) {
@@ -86,16 +91,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
     private void handleNotification(String message) {
-        if (!NotificationUtils.isAppIsInBackground(getApplicationContext())) {
-            Intent pushNotification = new Intent(Const.PUSH_NOTIFICATION);
-            pushNotification.putExtra(EXTRA_KEY_MESSSAGE, message);
-            LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
-
-            NotificationUtils notificationUtils = new NotificationUtils(getApplicationContext());
-            notificationUtils.playNotificationSound();
-        } else {
-
-        }
+        NotificationUtils notificationUtils = new NotificationUtils(getApplicationContext());
     }
 
     private void handleDataMessage(JSONObject jsonObject) {
