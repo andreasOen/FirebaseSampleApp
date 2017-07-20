@@ -3,4 +3,6 @@
     <string name="unsubscribe_lbl">Unsubscribe</string>
     <string name="subscribe_lbl">Subscribe</string>
     <string name="error_message_fetch">Failed to retrieve data</string>
+    <string name="subscribe_on_label">Subscribe On</string>
+    <string name="subscribe_off_label">Subscribe Off</string>
 </resources>

@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -50,7 +51,9 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.progress_bar)
     ProgressBar progressBar;
 
-    private NotificationUtils notificationUtils;
+    @BindView(R.id.txt_subscribe_to)
+    TextView txtSubscribeTo;
+
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     private long cacheExpiration = 3600;
@@ -61,14 +64,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        notificationUtils = new NotificationUtils(this);
         initFirebaseRemoteConfig();
         fetchData();
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction().equals(Const.REGISTRATION_COMPLETE)) {
-                    FirebaseMessaging.getInstance().subscribeToTopic(Const.TOPIC_UPDATE);
+//                    FirebaseMessaging.getInstance().subscribeToTopic(Const.TOPIC_UPDATE);
                     displayFirebaseRegId();
                 } else if (intent.getAction().equals(Const.PUSH_NOTIFICATION)) {
 //                    String message = intent.getStringExtra("message");
@@ -122,12 +124,16 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.btn_subscribe)
     final void subscribeButtonClicked() {
-        FirebaseMessaging.getInstance().subscribeToTopic("update");
+        FirebaseMessaging.getInstance().subscribeToTopic(Const.TOPIC_UPDATE);
+        txtSubscribeTo.setText(getString(R.string.subscribe_on_label));
+        txtSubscribeTo.setTextColor(Color.GREEN);
     }
 
     @OnClick(R.id.btn_unsubscribe)
     final void unSubscribeButtonClicked() {
-        FirebaseMessaging.getInstance().unsubscribeFromTopic("update");
+        FirebaseMessaging.getInstance().unsubscribeFromTopic(Const.TOPIC_UPDATE);
+        txtSubscribeTo.setText(getString(R.string.subscribe_off_label));
+        txtSubscribeTo.setTextColor(Color.RED);
     }
 
     private void initFirebaseRemoteConfig() {
