@@ -45,25 +45,23 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         if (remoteMessage == null) return;
 
-//        sendNotification(remoteMessage.getData().get(FIELD_TITLE), remoteMessage.getData().get(FIELD_MESSAGE));
-        if (remoteMessage.getNotification() != null) {
-            if (NotificationUtils.isAppIsInBackground(getApplicationContext())) {
+        if (NotificationUtils.isAppIsInBackground(getApplicationContext())) {
+            if (remoteMessage.getNotification() != null) {
                 sendNotification(remoteMessage.getNotification().getTitle(),
                         remoteMessage.getNotification().getBody());
             }
-        }
+        } else {
+            if (remoteMessage.getData().size() > 0) {
+                Timber.d("Data payload: " + remoteMessage.getData().toString());
 
-        if (!NotificationUtils.isAppIsInBackground(getApplicationContext())
-                && remoteMessage.getData().size() > 0) {
-            Timber.d("Data payload: " + remoteMessage.getData().toString());
-
-            try {
-                Intent pushNotification = new Intent(Const.PUSH_NOTIFICATION);
-                pushNotification.putExtra(EXTRA_KEY_MESSSAGE,
-                        remoteMessage.getData().get(FIELD_IMAGE_URL));
-                LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
-            } catch (Exception e) {
-                Timber.d("Exception: " + e.getMessage());
+                try {
+                    Intent pushNotification = new Intent(Const.PUSH_NOTIFICATION);
+                    pushNotification.putExtra(EXTRA_KEY_MESSSAGE,
+                            remoteMessage.getData().get(FIELD_IMAGE_URL));
+                    LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
+                } catch (Exception e) {
+                    Timber.d("Exception: " + e.getMessage());
+                }
             }
         }
     }
