@@ -70,11 +70,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction().equals(Const.REGISTRATION_COMPLETE)) {
-//                    FirebaseMessaging.getInstance().subscribeToTopic(Const.TOPIC_UPDATE);
                     displayFirebaseRegId();
                 } else if (intent.getAction().equals(Const.PUSH_NOTIFICATION)) {
-//                    String message = intent.getStringExtra("message");
-//                    Toast.makeText(getApplicationContext(), "Push notification: " + message, Toast.LENGTH_LONG).show();
                     Glide.with(getApplicationContext())
                             .load(intent.getStringExtra(MyFirebaseMessagingService.EXTRA_KEY_MESSSAGE))
                             .into(imgShow);
@@ -90,12 +87,9 @@ public class MainActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
                 new IntentFilter(Const.REGISTRATION_COMPLETE));
 
-        // register new push message receiver
-        // by doing this, the activity will be notified each time a new message arrives
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
                 new IntentFilter(Const.PUSH_NOTIFICATION));
 
-        // clear the notification area when the app is opened
         NotificationUtils.clearNotifications(getApplicationContext());
     }
 
