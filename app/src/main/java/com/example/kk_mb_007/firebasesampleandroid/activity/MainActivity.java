@@ -58,9 +58,6 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.btn_subscribe)
     Button btnSubscribe;
 
-    @BindView(R.id.btn_unsubscribe)
-    Button btnUnsubscribe;
-
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     private long cacheExpiration = 3600;
@@ -180,7 +177,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateView() {
         String colorCode = mFirebaseRemoteConfig.getString(REMOTE_CONFIG_KEY);
-        btnSubscribe.setBackgroundColor(Color.parseColor(colorCode));
-        btnUnsubscribe.setBackgroundColor(Color.parseColor(colorCode));
+        container.setBackgroundColor(Color.parseColor(colorCode));
     }
 }
