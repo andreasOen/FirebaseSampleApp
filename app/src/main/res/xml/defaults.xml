@@ -2,6 +2,6 @@
 <defaultsMap xmlns:android="http://schemas.android.com/apk/res/android">
     <entry>
         <key>background_color</key>
-        <value>#BEFFC7</value>
+        <value>#FFFFFF</value>
     </entry>
 </defaultsMap>
