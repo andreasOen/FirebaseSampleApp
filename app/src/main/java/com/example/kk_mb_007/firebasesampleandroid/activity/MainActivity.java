@@ -15,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -53,6 +54,12 @@ public class MainActivity extends AppCompatActivity {
 
     @BindView(R.id.txt_subscribe_to)
     TextView txtSubscribeTo;
+
+    @BindView(R.id.btn_subscribe)
+    Button btnSubscribe;
+
+    @BindView(R.id.btn_unsubscribe)
+    Button btnUnsubscribe;
 
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
@@ -173,6 +180,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateView() {
         String colorCode = mFirebaseRemoteConfig.getString(REMOTE_CONFIG_KEY);
-        container.setBackgroundColor(Color.parseColor(colorCode));
+        btnSubscribe.setBackgroundColor(Color.parseColor(colorCode));
+        btnUnsubscribe.setBackgroundColor(Color.parseColor(colorCode));
     }
 }
