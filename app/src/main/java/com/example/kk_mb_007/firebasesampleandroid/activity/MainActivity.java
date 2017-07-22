@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction().equals(Const.REGISTRATION_COMPLETE)) {
                     displayFirebaseRegId();
+                    FirebaseMessaging.getInstance().subscribeToTopic(Const.TOPIC_UPDATE);
                 } else if (intent.getAction().equals(Const.PUSH_NOTIFICATION)) {
                     Glide.with(getApplicationContext())
                             .load(intent.getStringExtra(MyFirebaseMessagingService.EXTRA_KEY_MESSSAGE))
