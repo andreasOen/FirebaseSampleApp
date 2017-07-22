@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/image_view_height"
         android:background="@color/blue"
-        android:src="@drawable/firebase_icon"
+        android:src="@drawable/firebase_android"
         />
 
     <TextView
@@ -28,6 +28,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="@dimen/spacing_normal"
         android:layout_margin="@dimen/spacing_normal">
 
         <Button
@@ -35,7 +36,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_marginRight="@dimen/spacing_normal"
             android:text="@string/subscribe_lbl" />
 
         <Button
@@ -43,7 +43,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:layout_marginRight="@dimen/spacing_normal"
             android:text="@string/unsubscribe_lbl" />
 
         <ProgressBar
